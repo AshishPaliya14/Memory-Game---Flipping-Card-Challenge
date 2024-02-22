@@ -1,0 +1,184 @@
+<--! HTML CODE --!>
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Memory Game</title>
+    <link rel="stylesheet" href="memory_game.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h2>Memory Game</h2>
+      <div class="game"></div>
+      <button class="reset" onclick="window.location.reload()">
+        Reset Game
+      </button>
+    </div>
+    <script>
+      const emojis = [
+        "😎",
+        "😎",
+        "😍",
+        "😍",
+        "🙄",
+        "🙄",
+        "🎁",
+        "🎁",
+        "🎂",
+        "🎂",
+        "🚖",
+        "🚖",
+        "❤",
+        "❤",
+        "🤑",
+        "🤑",
+      ];
+      var shuf_emojis = emojis.sort(() => (Math.random() > 0.5 ? 2 : -1));
+
+      let openedCards = []; // To store opened cards
+
+      for (var i = 0; i < emojis.length; i++) {
+        let box = document.createElement("div");
+        box.className = "item";
+        box.innerHTML =
+          '<div class="front"></div><div class="back">' +
+          shuf_emojis[i] +
+          "</div>";
+        box.onclick = function () {
+          if (
+            !this.classList.contains("boxOpen") &&
+            !this.classList.contains("boxMatch")
+          ) {
+            this.classList.add("boxOpen");
+            openedCards.push(this); // Add the opened card to the openedCards array
+            if (openedCards.length === 2) {
+              // If two cards are opened, check for match
+              if (
+                openedCards[0].querySelector(".back").textContent ===
+                openedCards[1].querySelector(".back").textContent
+              ) {
+                openedCards[0].classList.add("boxMatch");
+                openedCards[1].classList.add("boxMatch");
+                openedCards = []; // Clear the openedCards array
+                if (
+                  document.querySelectorAll(".boxMatch").length ===
+                  emojis.length
+                ) {
+                  alert("Congratulations! You've won!🥳🏆");
+                }
+              } else {
+                // If not a match, close the cards after a delay
+                setTimeout(() => {
+                  openedCards.forEach((card) =>
+                    card.classList.remove("boxOpen")
+                  );
+                  openedCards = []; // Clear the openedCards array
+                }, 500);
+              }
+            }
+          }
+        };
+        document.querySelector(".game").appendChild(box);
+      }
+    </script>
+  </body>
+</html>
+
+CSS CODE :
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: monospace;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #d3c5e5;
+}
+
+.container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 30px;
+  background: #735da5;
+  padding: 50px 75px;
+}
+
+h2 {
+  font-size: 3em;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.reset {
+  padding: 15px 20px;
+  margin-bottom: 10%;
+  color: black;
+  background: #fff;
+  border: none;
+  font-size: 1.5em;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.reset:focus {
+  color: #fff;
+  background-image: radial-gradient(
+    circle 325px at 19.2% 64.8%,
+    rgba(254, 62, 101, 1) 9.7%,
+    rgba(166, 24, 146, 1) 91.3%
+  );
+}
+
+.game {
+  height: 430px;
+  width: 430px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.item {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 3em;
+  background: #fff;
+  transform-style: preserve-3d;
+  transition: transform 0.5s ease;
+}
+
+.item.boxOpen {
+  transform: rotateY(180deg);
+}
+
+.item::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #d3c5e5;
+  transition: 0.25s;
+  backface-visibility: hidden;
+}
+
+.boxOpen .item::after {
+  transform: rotateY(180deg);
+  backface-visibility: visible;
+}
